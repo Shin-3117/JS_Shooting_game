@@ -148,6 +148,8 @@ function animate(){
     spawnEnemy()
     if (score >10000) {spawnEnemy()}
     if (score >20000) {spawnEnemy()}
+    if (score >30000) {spawnEnemy()}
+    if (score >40000) {spawnEnemy()}
 
     animationID = requestAnimationFrame(animate)
     // 해당 영역, 불투명도로 잔상 생성
