@@ -1,4 +1,5 @@
 # 자바스크립트로 만든 슈팅 게임
+https://shin-3117.github.io/JS_Shooting_game/
 ## 사용 기술 스텍
 <img src="https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white">
 <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black">
