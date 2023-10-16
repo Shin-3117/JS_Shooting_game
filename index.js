@@ -8,6 +8,7 @@ const scoreEl = document.querySelector('#score')
 const startButtonEl = document.querySelector('#startButton')
 const modalEl = document.querySelector('#scoreBoard')
 const BoardScoreEl = document.querySelector('#BoardScore')
+const SuperShootEl = document.querySelector('#SuperShoot')
 
 class Player {
     constructor(x,y,radius,color){
@@ -94,6 +95,32 @@ class Particle {
     }
 }
 
+class SuperBullet {
+    constructor(x,y,radius,color, velocity){
+        this.x = x
+        this.y = y
+        this.radius = radius
+        this.color = color
+        this.velocity = velocity
+        this.alpha = 1
+    }
+    draw(){
+        c.save()
+        c.globalAlpha = this.alpha
+        c.beginPath()
+        c.arc(this.x, this.y, this.radius, 0, Math.PI*2, false)
+        c.fillStyle = this.color
+        c.fill()
+        c.restore()
+    }
+    update(){
+        this.draw()
+        this.x += this.velocity.x
+        this.y += this.velocity.y
+        this.alpha -= 0.01
+    }
+}
+
 const x = canvas.width/2
 const y = canvas.height/2
 
@@ -102,6 +129,8 @@ let bullets = []
 let enemies = []
 let particles = []
 let score = 0
+let superBullets = []
+let superShoot = 0
 
 function init(){
     player = new Player(x,y, 20, '#ffffff')
@@ -110,6 +139,8 @@ function init(){
     particles = []
     score = 0
     scoreEl.innerHTML = score
+    superShoot = 0
+    SuperShootEl.innerHTML = superShoot
 }
 
 let frame = 0
@@ -149,6 +180,10 @@ function animate(){
     // if (score >10000) {
     for (let i =-1; i<score/10000; i++){
         spawnEnemy()}
+    if(frame%60===0){
+        superShoot +=1;
+        SuperShootEl.innerHTML = superShoot;
+    }
 
     animationID = requestAnimationFrame(animate)
     // 해당 영역, 불투명도로 잔상 생성
@@ -169,7 +204,19 @@ function animate(){
             
         }
     })
-    
+    superBullets.forEach((superBullet, superBulletindex)=>{
+        superBullet.update()
+        // 화면을 벗어나면 제외
+        if (superBullet.x + superBullet.radius <0 || 
+            superBullet.x - superBullet.radius > canvas.width ||
+            superBullet.y + superBullet.radius < 0 ||
+            superBullet.y - superBullet.radius > canvas.height){
+            setTimeout(() =>{
+                superBullets.splice(superBulletindex,1)
+            }, 0)
+            
+        }
+    })
     enemies.forEach((enemy, index) => {
         enemy.update()
 
@@ -208,8 +255,41 @@ function animate(){
             }
         });
 
+        superBullets.forEach((superBullet, superBulletindex) => {
+            const dist = Math.hypot(superBullet.x - enemy.x, superBullet.y - enemy.y)
+            // 총알과 적 충돌 처리
+            if (dist - enemy.radius - superBullet.radius < 1){
+                // 점수 추가
+                score += 101
+                scoreEl.innerHTML = score
+                // 입자 생성
+                for (let i=0; i< enemy.radius; i++){
+                    superBullets.push(new SuperBullet(
+                        superBullet.x,superBullet.y,
+                        Math.random()*3+1, 
+                        enemy.color, 
+                        {x: (Math.random()-0.5)*Math.random()*enemy.radius,
+                        y: (Math.random()-0.5)*Math.random()*enemy.radius}
+                        ))
+                }
+                // if(enemy.radius -10 >10){
+                //     enemy.radius -= 10
+                // }else{
+                setTimeout(()=>{
+                    enemies.splice(index,1)
+                    superBullets.splice(superBulletindex,1)
+                },0)
+                // }
+            }
+        });
     });
-
+    superBullets.forEach((superBullet,superBulletindex)=>{
+        if(superBullet.alpha<=0){
+            superBullets.splice(superBulletindex,1)
+        }else{
+            superBullet.update()
+        }
+    })
     particles.forEach((particle, index) =>{
         if (particle.alpha <=0){
             particles.splice(index,1)
@@ -227,18 +307,29 @@ addEventListener("click",(event)=>{
         x: Math.cos(angle)*4,
         y: Math.sin(angle)*4
     }
-    bullets.push(new Bullet(
-        canvas.width/2,
-        canvas.height/2,
-        5, 'white',
-        velocity
-    ))
-
+    if (superShoot < 1){
+        bullets.push(new Bullet(
+            canvas.width/2,
+            canvas.height/2,
+            5, 'white',
+            velocity
+        ))
+    }else if(superShoot > 0){
+        superShoot -= 1
+        SuperShootEl.innerHTML = superShoot;
+        superBullets.push(new SuperBullet(
+            canvas.width/2,
+            canvas.height/2,
+            25, 'white',
+            velocity
+        ))
+    }
+        
+    
 })
 
 startButtonEl.addEventListener('click', () =>{
     init()
-    
     animate()
     modalEl.style.display = 'none'
 })
