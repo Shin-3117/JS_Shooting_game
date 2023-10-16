@@ -6,7 +6,7 @@ https://shin-3117.github.io/JS_Shooting_game/
 
 HTML의 canvas tag와 JavaScript의 animate() 기능을 사용하여 만들었습니다.
 
-<img src='./plat_gif.gif'>
+<img src='./play_gif.gif'>
 
 ## 플레이 방법
 마우스로 클릭으로 총알이 나갑니다.
