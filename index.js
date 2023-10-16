@@ -164,10 +164,13 @@ function spawnEnemy(){
             y - canvas.height/2,
             x - canvas.width/2)
         const velocity = {
-            x: -Math.cos(angle),
-            y: -Math.sin(angle)
+            x: -Math.cos(angle)/2,
+            y: -Math.sin(angle)/2
         }
-        enemies.push(new Enemy(x,y,radius,color,velocity))
+        if (enemies.length < 512){
+            enemies.push(new Enemy(x,y,radius,color,velocity))
+        }
+        
     }
 }
 
@@ -178,9 +181,9 @@ function animate(){
     // 적 생성
     // spawnEnemy()
     // if (score >10000) {
-    for (let i =-1; i<score/10000; i++){
+    for (let i =-1; i<score/20000; i++){
         spawnEnemy()}
-    if(frame%60===0){
+    if(frame%600===0){
         superShoot +=1;
         SuperShootEl.innerHTML = superShoot;
     }
@@ -235,7 +238,7 @@ function animate(){
                 score += 100
                 scoreEl.innerHTML = score
                 // 입자 생성
-                for (let i=0; i< enemy.radius; i++){
+                for (let i=0; i< enemy.radius/2; i++){
                     particles.push(new Particle(
                         bullet.x,bullet.y,
                         Math.random()*3+1, 
@@ -244,7 +247,7 @@ function animate(){
                         y: (Math.random()-0.5)*Math.random()*enemy.radius}
                         ))
                 }
-                if(enemy.radius -10 >10){
+                if(enemy.radius -10 >20){
                     enemy.radius -= 10
                 }else{
                     setTimeout(()=>{
@@ -263,14 +266,14 @@ function animate(){
                 score += 101
                 scoreEl.innerHTML = score
                 // 입자 생성
-                if(superBullets.length <200){
-                    for (let i=0; i< 8; i++){
+                if(superBullets.length <128){
+                    for (let i=0; i< 6; i++){
                         superBullets.push(new SuperBullet(
                             superBullet.x,superBullet.y,
-                            Math.random()*3+1, 
+                            Math.random()*3+3, 
                             enemy.color, 
-                            {x: (Math.random()-0.5)*Math.random()*enemy.radius/2,
-                            y: (Math.random()-0.5)*Math.random()*enemy.radius/2}
+                            {x: (Math.random()-0.5)*Math.random()*enemy.radius/3,
+                            y: (Math.random()-0.5)*Math.random()*enemy.radius/3}
                             ))
                         }
                         setTimeout(()=>{
