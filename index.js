@@ -148,7 +148,7 @@ function spawnEnemy(){
     // setInterval : 끝에 지정한 시간 단위로 반복, 다른 페이지를 보고있어도 작동
     // 그래서 프래임으로 애니메이션 동작할 때만 타이머 흐르게 변경
     if (frame%60===0){
-        const radius = Math.random() * 30 +10
+        const radius = Math.random() * 30 +20
         let x
         let y
         if(Math.random()<0.5){
@@ -258,28 +258,28 @@ function animate(){
         superBullets.forEach((superBullet, superBulletindex) => {
             const dist = Math.hypot(superBullet.x - enemy.x, superBullet.y - enemy.y)
             // 총알과 적 충돌 처리
-            if (dist - enemy.radius - superBullet.radius < 1){
+            if (dist - enemy.radius - superBullet.radius < 0.1){
                 // 점수 추가
                 score += 101
                 scoreEl.innerHTML = score
                 // 입자 생성
-                for (let i=0; i< enemy.radius; i++){
-                    superBullets.push(new SuperBullet(
-                        superBullet.x,superBullet.y,
-                        Math.random()*3+1, 
-                        enemy.color, 
-                        {x: (Math.random()-0.5)*Math.random()*enemy.radius,
-                        y: (Math.random()-0.5)*Math.random()*enemy.radius}
-                        ))
+                if(superBullets.length <200){
+                    for (let i=0; i< 8; i++){
+                        superBullets.push(new SuperBullet(
+                            superBullet.x,superBullet.y,
+                            Math.random()*3+1, 
+                            enemy.color, 
+                            {x: (Math.random()-0.5)*Math.random()*enemy.radius/2,
+                            y: (Math.random()-0.5)*Math.random()*enemy.radius/2}
+                            ))
+                        }
+                        setTimeout(()=>{
+                            // enemy.radius=0
+                            superBullets.splice(superBulletindex,1)
+                            enemies.splice(index,1)
+                        },0)
                 }
-                // if(enemy.radius -10 >10){
-                //     enemy.radius -= 10
-                // }else{
-                setTimeout(()=>{
-                    enemies.splice(index,1)
-                    superBullets.splice(superBulletindex,1)
-                },0)
-                // }
+                
             }
         });
     });
